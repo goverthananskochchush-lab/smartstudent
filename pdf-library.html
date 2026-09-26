@@ -734,6 +734,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   </div>
 </main>
 
+<script src="catalogue.js"></script>
+
 <script>
 (function () {
   "use strict";
@@ -772,7 +774,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
         description: textValue(record.description),
         uploadDate: textValue(record.uploadDate),
         status: "Published",
-        fileUrl: textValue(record.fileUrl)
+        fileUrl: textValue(record.fileUrl),
+        downloadUrl: textValue(record.downloadUrl),
+        pages: textValue(record.pages)
       };
     }).filter(function (record) {
       return record.id && record.title;
@@ -851,7 +855,21 @@ button, a { -webkit-tap-highlight-color: transparent; }
     if (record.uploadDate) {
       detailParts.push("<span>Uploaded <strong>" + escapeHtml(record.uploadDate) + "</strong></span>");
     }
-    detailParts.push("<span>Publication status <strong>" + escapeHtml(record.status) + "</strong></span>");
+    detailParts.push("<span>Status <strong>" + escapeHtml(record.status) + "</strong></span>");
+
+    var params = new URLSearchParams({
+      id: record.id,
+      title: record.title,
+      subject: record.subject,
+      category: record.category,
+      language: record.language,
+      description: record.description,
+      publishedAt: record.uploadDate,
+      published: "true",
+      pdfUrl: record.fileUrl,
+      downloadUrl: record.downloadUrl || record.fileUrl,
+      pages: record.pages ? String(record.pages) : ""
+    });
 
     return "<article class=\"library-card\">" +
       "<div class=\"library-card-main\">" +
@@ -865,8 +883,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
         "<p class=\"library-card-details\">" + detailParts.join("") + "</p>" +
       "</div>" +
       "<div class=\"library-card-actions\">" +
-        "<a class=\"button button-secondary\" href=\"pdf-preview.html?id=" + encodeURIComponent(record.id) + "\">Preview PDF</a>" +
-        "<a class=\"button button-primary\" href=\"" + escapeHtml(record.fileUrl) + "\" download>Download PDF</a>" +
+        "<a class=\"button button-secondary\" href=\"pdf-preview.html?" + params.toString() + "\">Preview PDF</a>" +
+        "<a class=\"button button-primary\" href=\"" + escapeHtml(record.downloadUrl || record.fileUrl) + "\" download>Download PDF</a>" +
       "</div>" +
     "</article>";
   }
